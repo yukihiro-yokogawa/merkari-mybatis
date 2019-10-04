@@ -34,6 +34,6 @@ public interface ItemMapper {
 	 */
 	Item selectItem(@Param("type") String count,@Param("searchCategory") SearchCategory searchCategory);
 	
-	Item selectItem(@Param("id") int itemId,@Param("type") String detail);
+	Item selectItem(@Param("id") Integer itemId,@Param("type") String detail);
 	
 }

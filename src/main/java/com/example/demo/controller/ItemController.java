@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.example.demo.domain.Item;
 import com.example.demo.domain.Paging;
+import com.example.demo.form.ItemForm;
 import com.example.demo.form.SearchCategoryForm;
 import com.example.demo.service.ItemService;
 import com.google.common.collect.Iterables;
@@ -34,6 +36,10 @@ public class ItemController {
 	@ModelAttribute("searchCategoryForm")
 	public SearchCategoryForm searchCategoryForm() {
 		return new SearchCategoryForm();
+	}
+	@ModelAttribute
+	public ItemForm setUpItemForm() {
+		return new ItemForm();
 	}
 	
 	/**
@@ -149,14 +155,48 @@ public class ItemController {
 	 * @return
 	 */
 	@RequestMapping("/detail")
-	public String itemDetail(int itemId, String type, Model model, SearchCategoryForm searchCategoryForm) {
+	public String itemDetail(Integer itemId,@ModelAttribute Paging paging, SearchCategoryForm searchCategoryForm, Model model,HttpSession session) {
 		
-		Map<String,String> detailMap = itemService.itemDetail(itemId, type);
+		System.out.println(paging);
+		Item itemDetail = itemService.itemDetail(itemId, paging.getType());
+		if(itemDetail.getParentName() == null) {
+			itemDetail.setParentName("no-category");
+			itemDetail.setChildName("no-category");
+			itemDetail.setGrandChildName("no-category");
+		}
+		
+		Map<String,String> detailMap = new LinkedHashMap<>();
+		detailMap.put("ID", String.valueOf(itemDetail.getId()));
+		detailMap.put("name", itemDetail.getName());
+		detailMap.put("price", String.valueOf(itemDetail.getPrice()));
+		if(!itemDetail.getParentName() .equals("no-category")) {
+			detailMap.put("category", itemDetail.getParentName() + "/" + itemDetail.getChildName() +"/" + itemDetail.getGrandChildName());
+		}else {
+			detailMap.put("category","no-category");
+		}
+		detailMap.put("brand", itemDetail.getBrand());
+		detailMap.put("condition", String.valueOf(itemDetail.getCondition()));
+		detailMap.put("description", itemDetail.getDescription());
 		
 		//SessionAttributesを再送信
 		model.addAttribute("searchCategoryForm",searchCategoryForm);
+		model.addAttribute("itemId",itemId);
+		model.addAttribute("page",paging.getPage());
+		model.addAttribute("type",paging.getType());
 		model.addAttribute("detailMap",detailMap);
+		model.addAttribute("itemDetail",itemDetail);
 		return "detail";
+	}
+	
+	@RequestMapping("/edit")
+	public String itemEdit(ItemForm itemForm, Model model, Paging paging,Integer itemId, SearchCategoryForm searchCategoryForm) {
+		System.out.println(paging);
+		model.addAttribute("itemDetail",itemForm);
+		model.addAttribute("itemId",itemId);
+		model.addAttribute("page",paging.getPage());
+		model.addAttribute("type",paging.getType());
+		model.addAttribute("searchCategoryForm",searchCategoryForm);
+		return "edit";
 	}
 
 }

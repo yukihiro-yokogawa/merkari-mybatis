@@ -1,8 +1,6 @@
 package com.example.demo.service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,24 +57,11 @@ public class ItemService {
 		return itemCount;
 	}
 	
-	public Map<String,String> itemDetail(int itemId,String detail) {
+	public Item itemDetail(Integer itemId,String detail) {
+
 		Item itemDetail = itemMapper.selectItem(itemId, detail);
 		
-		Map<String,String> detailMap = new LinkedHashMap<>();
-		detailMap.put("ID", String.valueOf(itemDetail.getId()));
-		detailMap.put("name", itemDetail.getName());
-		detailMap.put("price", String.valueOf(itemDetail.getPrice()));
-		if(itemDetail.getParentName() != null) {
-			detailMap.put("category", itemDetail.getParentName() + "/" + itemDetail.getChildName() +"/" + itemDetail.getGrandChildName());
-		} else {
-			detailMap.put("category", "");			
-		}
-		detailMap.put("brand", itemDetail.getBrand());
-		detailMap.put("condition", String.valueOf(itemDetail.getCondition()));
-		detailMap.put("description", itemDetail.getDescription());
-		
-		
-		return detailMap;
+		return itemDetail;
 	}
 
 }

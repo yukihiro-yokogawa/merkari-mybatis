@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ReMerukariApplication {
+public class MerukariMybatisApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ReMerukariApplication.class, args);
+		SpringApplication.run(MerukariMybatisApplication.class, args);
 	}
 
 	
