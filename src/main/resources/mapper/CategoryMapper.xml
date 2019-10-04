@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.CategoryMapper">
+	<select id="selectCategory" resultMap="CategoryList">
+		select
+			parent.id as id,
+			parent.name as name,
+			child.id as child_id,
+			child.name as child_name,
+			grand_child.id as grand_child_id,
+			grand_child.name as grand_child_name
+		from
+			category as parent
+		inner join
+			category as child
+		on
+			parent.id = child.parent
+		inner join
+			category as grand_child
+		on
+			child.id = grand_child.parent
+	</select>
+	
+	<resultMap type="Category" id="CategoryList">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<collection property="childCategoryList" ofType="Category">
+			<id column="child_id" property="id"/>
+			<result column="child_name" property="name"/>
+			<collection property="childCategoryList" ofType ="Category">
+				<id column="grand_child_id" property="id"/>
+				<result column="grand_child_name" property="name"/>
+			</collection>
+		</collection>
+	</resultMap>
+</mapper>

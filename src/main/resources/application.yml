@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/merukari
+    username: postgres
+    password: postgres
+
+server:
+  servlet:
+    context-path: /merukari
+
+mybatis:
+  mapper-locations: classpath*:/mapper/*.xml
+  config-location: classpath:/config/mybatis.xml
+  check-config-location: true
+
+logging:
+  level:
+    org:
+      springframework: WARN
+    com:
+      example:
+        demo:
+          mapper:
+            ItemMapper: DEBUG
+            CategoryMapper: DEBUG

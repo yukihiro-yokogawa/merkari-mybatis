@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ItemMapper">
+	<select id="selectItem" resultType="Item">
+		select
+		<if test="type == 'count' or type == 'searchCount'">
+			count(item.id) as count,
+			min(item.id) as minId
+		</if>
+		<if
+			test="type == 'select' or type == 'searchItem' or type == 'next' or type == 'prev' or type == 'search' or type == 'brandSearch' or type == 'detail'">
+			item.id as id,
+			item.name as name,
+			item.condition as condition,
+			parent.id as parent_id,
+			parent.name as parent_name,
+			child.id as child_id,
+			child.name as child_name,
+			grand_child.id as grand_child_id,
+			grand_child.name as grand_child_name,
+			item.brand as brand,
+			item.price as price,
+			item.shipping as shipping,
+			item.description description
+		</if>
+		from
+		category as parent
+		inner join
+		category as child
+		on
+		parent.id = child.parent
+		inner join
+		category as grand_child
+		on
+		child.id = grand_child.parent
+		right outer join
+		items as item
+		on
+		item.category = grand_child.id
+		<if test="type == 'detail'">
+			<where>
+				item.id = #{id}
+			</where>
+		</if>
+		<if
+			test="type == 'select' or type == 'searchItem' or type == 'next' or type == 'prev' or type == 'search' or type == 'searchCount' or type == 'brandSaearch'">
+			<where>
+				<if
+					test="type == 'select' or type == 'next' or type == 'searchItem' or type == 'brandSearch'">
+					item.id &gt;= #{id}
+				</if>
+				<if test="type == 'prev'">
+					AND item.id &lt;= #{id}
+				</if>
+				<if
+					test="searchCategory.name != null and searchCategory.name != ''">
+					AND item.name LIKE '${searchCategory.name}%'
+				</if>
+				<if
+					test="searchCategory.parentId != null and searchCategory.parentId != 0">
+					AND parent.id = #{searchCategory.parentId}
+				</if>
+				<if
+					test="searchCategory.childId != null and searchCategory.childId != 0">
+					AND child.id = #{searchCategory.childId}
+				</if>
+				<if
+					test="searchCategory.grandChildId != null and searchCategory.grandChildId != 0">
+					AND grand_child.id = #{searchCategory.grandChildId}
+				</if>
+				<if
+					test="searchCategory.brand != null and searchCategory.brand != '' and type != 'brandSearch'">
+					AND item.brand LIKE '${searchCategory.brand}%'
+				</if>
+				<if test="type == 'brandSearch'">
+					AND item.brand = '${searchCategory.brand}'
+				</if>
+			</where>
+			<if test="type != 'searchCount' and type != 'count'">
+				order by item.id
+			</if>
+			<if test="type == 'prev'">
+				desc
+			</if>
+			<if test="type != 'searchCount'">
+				limit 30
+				<if test="type == 'search'">
+					offset #{id}
+				</if>
+			</if>
+		</if>
+	</select>
+</mapper>
