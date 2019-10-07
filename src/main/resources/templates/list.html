@@ -80,8 +80,8 @@
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous" th:unless="${page == 1}"><a href="#" th:href="@{/item/searchItem(page=${page}-1,type='prev')}">&larr; prev</a></li>
-          <li class="next" th:unless="${page == session.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${page}+1,type='next')}">next &rarr;</a></li>
+          <li class="previous" th:unless="${page == 1}"><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}-1,type='prev')}">&larr; prev</a></li>
+          <li class="next" th:unless="${page == session.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}+1,type='next')}">next &rarr;</a></li>
         </ul>
       </nav>
     </div>
@@ -100,18 +100,18 @@
         </thead>
         <tbody>
           <tr th:each = "item : ${itemList}">
-            <td class="item-name"><a href="./detail.html" th:text="${item.name}" th:href="@{/item/detail(itemId=${item.id},type=detail,page=${page})}">Razer BlackWidow Chroma Keyboard</a></td>
-            <td class="item-price" th:text = "${item.price}">52.0</td>
-            <td class="item-category"><a href="" th:text = "${item.parentName}" 
-            	th:href="@{/item/searchItem(page=1,type='searchItem',parentId=${item.parentId},childId=0,grandChildId=0)}">Electronics</a> 
+            <td class="item-name"><a href="./detail.html" th:text="${item.name}" th:href="@{/item/detail(id=${item.id},type=detail)}">Razer BlackWidow Chroma Keyboard</a></td>
+            <td class="item-price" th:text="${item.price}">52.0</td>
+            <td class="item-category"><a href="" th:text ="${item.parentName}" 
+            	th:href="@{/item/searchItem(page=1,type='search',parentId=${item.parentId},childId=0,grandChildId=0)}">Electronics</a> 
             / 
             <a href="" th:text="${item.childName}"
-            	th:href="@{/item/searchItem(page=1,type='searchItem',parentId=0,childId=${item.childId},grandChildId=0)}">Computers &amp; Tablets</a> 
+            	th:href="@{/item/searchItem(page=1,type='search',parentId=0,childId=${item.childId},grandChildId=0)}">Computers &amp; Tablets</a> 
             / 
             <a href="" th:text="${item.grandChildName}"
-            	th:href="@{/item/searchItem(page=1,type='searchItem',parentId=0,childId=0,grandChildId=${item.grandChildId})}">>Components &amp; Parts</a></td>
+            	th:href="@{/item/searchItem(page=1,type='search',parentId=0,childId=0,grandChildId=${item.grandChildId})}">>Components &amp; Parts</a></td>
             <td class="item-brand" ><a href="" th:text = "${item.brand}"
-            th:href="@{/item/searchItem(page=1,type='searchItem',parentId=0,childId=0,grandChildId=0,brand=${item.brand})}">Razer</a></td>
+            th:href="@{/item/searchItem(page=1,type='search',parentId=0,childId=0,grandChildId=0,brand=${item.brand})}">Razer</a></td>
             <td class="item-condition" th:text = "${item.condition}">3</td>
           </tr>
         </tbody>
@@ -122,8 +122,8 @@
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous" th:unless="${page == 1}"><a href="#" th:href="@{/item/searchItem(page=${page}-1,type='prev')}">&larr; prev</a></li>
-          <li class="next" th:unless="${page == session.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${page}+1,type='next')}">next &rarr;</a></li>
+          <li class="previous" th:unless="${page == 1}"><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}-1,type='prev')}">&larr; prev</a></li>
+          <li class="next" th:unless="${page == session.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}+1,type='next')}">next &rarr;</a></li>
         </ul>
       </nav>
       <!-- ページ番号を指定して表示するフォーム -->
@@ -135,7 +135,7 @@
               <input type="text" name="page" class="form-control"/>
               <input type="hidden" name="type" th:value="search"/>
               <!-- 総ページ数 -->
-              <div class="input-group-addon">/ <span th:text="${session.maxPage}">20</span></div>
+              <div class="input-group-addon">/ <span th:text="${searchCategoryForm.maxPage}">20</span></div>
             </div>
             <div class="input-group col-xs-1">
               <button type="submit" class="btn btn-default">Go</button>

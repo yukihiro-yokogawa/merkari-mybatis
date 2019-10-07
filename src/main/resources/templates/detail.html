@@ -43,7 +43,7 @@
 
   <!-- details -->
   <div class="container">
-    <a type="button" class="btn btn-default" href="./list.html" th:href="@{/item/searchItem(page=${page},type=search,name=,brand=)}"><i class="fa fa-reply"></i> back</a>
+    <a type="button" class="btn btn-default" href="./list.html" th:href="@{/item/searchItem(type=search,name=,brand=)}"><i class="fa fa-reply"></i> back</a>
     <h2>Details</h2>
     <div id="details">
       <table class="table table-hover">
@@ -54,7 +54,8 @@
           </tr>
         </tbody>
       </table>
-      <a type="button" class="btn btn-default" href="./edit.html" th:href="@{/item/edit(itemId=${itemId},page=${page},type=${type},id=${itemDetail.id},name=${itemDetail.name},condition=${itemDetail.condition},parentName=${itemDetail.parentName},childName=${itemDetail.childName},grandChildName=${itemDetail.grandChildName},brand=${itemDetail.brand},price=${itemDetail.price},shipping=${itemDetail.shipping},description=${itemDetail.description})}"><i class="fa fa-pencil-square-o"></i>&nbsp;edit</a>
+      <a type="button" class="btn btn-default" href="./edit.html" 
+      th:href="@{/item/edit}"><i class="fa fa-pencil-square-o"></i>&nbsp;edit</a>
     </div>
   </div>
 </body>

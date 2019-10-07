@@ -44,11 +44,11 @@
 
   <!-- details -->
   <div id="input-main" class="container">
-    <a type="button" class="btn btn-default" href="./detail.html" th:href="@{/item/detail(itemId=${itemId},page=${page},type=${type})}"><i class="fa fa-reply"></i> back</a>
+    <a type="button" class="btn btn-default" href="./detail.html" th:href="@{/item/detail(itemId=${itemId})}"><i class="fa fa-reply"></i> back</a>
     <h2>Edit</h2>
 
     <!-- edit form -->
-    <form action="#" method="POST" class="form-horizontal" th:object="${itemForm}">
+    <form action="#" method="POST" class="form-horizontal" th:object="${itemDetail}">
         <!-- name -->
         <div class="form-group">
           <label for="inputName" class="col-sm-2 control-label">name</label>

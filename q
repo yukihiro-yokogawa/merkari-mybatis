@@ -1,0 +1,20 @@
+add 商品詳細画面と商品更新画面のViewとパラメータの維持
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch develop
+# Your branch is up to date with 'origin/develop'.
+#
+# Changes to be committed:
+#	modified:   pom.xml
+#	deleted:    src/main/java/com/example/demo/GitTestApplication.java
+#	renamed:    src/main/java/com/example/demo/ReMerukariApplication.java -> src/main/java/com/example/demo/MerukariMybatisApplication.java
+#	modified:   src/main/java/com/example/demo/controller/ItemController.java
+#	new file:   src/main/java/com/example/demo/form/ItemForm.java
+#	modified:   src/main/java/com/example/demo/mapper/ItemMapper.java
+#	modified:   src/main/java/com/example/demo/service/ItemService.java
+#	deleted:    src/main/resources/application.properties
+#	modified:   src/main/resources/templates/detail.html
+#	modified:   src/main/resources/templates/edit.html
+#	modified:   src/main/resources/templates/list.html
+#
