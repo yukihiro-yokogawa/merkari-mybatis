@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html
-	xmlns:th="http://www.thymeleaf.org">>
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -17,6 +18,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script th:src="@{/js/pulldown.js}"></script>
+  <script th:src="@{/js/form_binding.js}"></script>
   <title>Rakus Items</title>
 </head>
 <body>
@@ -33,10 +35,11 @@
     <div id="navbar" class="collapse navbar-collapse">
       <div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="logout" href="./login.html">Logout&nbsp;<i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="!hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user}">Login <i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user/logout}">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+          <span id="loginName" sec:authorize="hasRole('USER')" sec:authentication="principal.mailAddress">user: userName</span>
         </p>
       </div>
     </div>
@@ -44,16 +47,17 @@
 
   <!-- details -->
   <div id="input-main" class="container">
-    <a type="button" class="btn btn-default" href="./detail.html" th:href="@{/item/detail(itemId=${itemId})}"><i class="fa fa-reply"></i> back</a>
+    <a type="button" class="btn btn-default" href="./detail.html" th:href="@{/item/detail(id=${itemDetail.id})}"><i class="fa fa-reply"></i> back</a>
     <h2>Edit</h2>
 
     <!-- edit form -->
-    <form action="#" method="POST" class="form-horizontal" th:object="${itemDetail}">
+    <form action="#" method="POST" class="form-horizontal" th:action="@{/item/updateProcess}" th:object="${itemForm}">
         <!-- name -->
         <div class="form-group">
           <label for="inputName" class="col-sm-2 control-label">name</label>
           <div class="col-sm-8">
             <input type="text" name="name" class="form-control" id="inputName" th:field="*{name}"/>
+            <span th:errors="*{name}" class="text-danger">error:may not be empty</span>
           </div>
         </div>
         <!-- price -->
@@ -61,30 +65,34 @@
           <label for="price" class="col-sm-2 control-label">price</label>
           <div class="col-sm-8">
             <input type="text" name="price" class="form-control" id="price" th:field="*{price}"/>
+            <span th:errors="*{price}" class="text-danger">error:may not be empty</span>
           </div>
         </div>
         <!-- category -->
+        <input type="hidden" name="hiddenParent" th:value="${searchCategoryForm.parentId}">
+        <input type="hidden" name="hiddenChild" th:value="${searchCategoryForm.childId}">
+        <input type="hidden" name="hiddenGrandChild" th:value="${searchCategoryForm.grandChildId}">
         <div class="form-group">
           <label for="category" class="col-sm-2 control-label">category</label>
           <div class="col-sm-8">
-            <select id="parent-category" class="form-control">
-              <option th:text="${parentName}" th:value="${parentId}">- parentCategory -</option>
+            <select name="parentId" id="parent-category" class="form-control">
+              <option value="0">- parentCategory -</option>
             </select>
           </div>
         </div>
         <div class="form-group">
           <label for="category" class="col-sm-2 control-label"></label>
           <div class="col-sm-8">
-            <select id= "child-category" class="form-control">
-              <option th:field="*{childName}" th:value="*{childId}">- childCategory -</option>
+            <select name="childId" id= "child-category" class="form-control">
+              <option value="0">- childCategory -</option>
             </select>
           </div>
         </div>
         <div class="form-group">
           <label for="category" class="col-sm-2 control-label"></label>
           <div class="col-sm-8">
-            <select id="grand-child-category" class="form-control">
-              <option th:field="*{grandChildName}" th:value="*{grandChildId}">- grandChild -</option>
+            <select name="grandChildId" id="grand-child-category" class="form-control">
+              <option value="0">- grandChild -</option>
             </select>
           </div>
         </div>
@@ -98,15 +106,11 @@
         <!-- condition -->
         <div class="form-group">
           <label for="condition" class="col-sm-2 control-label">condition</label>
+          <input name="itemCondition" type="hidden" th:value="*{condition}">
           <div class="col-sm-8">
-            <label for="condition1" class="radio-inline">
-              <input type="radio" name="condition" id="condition1" value="1"/> 1
-            </label>
-            <label for="condition2" class="radio-inline">
-              <input type="radio" name="condition" id="condition2" value="2"/> 2
-            </label>
-            <label for="condition3" class="radio-inline">
-              <input type="radio" name="condition" id="condition3" value="3"/> 3
+            <label th:each="condition:${conditionList}" for="condition1" class="radio-inline">
+              <input type="radio" name="condition" id="condition1" th:value="${condition}" th:text="${condition}"/> 
+              <span th:errors="*{condition}" class="text-danger">error:may not be empty</span>
             </label>
           </div>
         </div>
@@ -115,6 +119,7 @@
           <label for="description" class="col-sm-2 control-label">description</label>
           <div class="col-sm-8">
             <textarea name="description" id="description" class="form-control" rows="5" th:field="*{description}"></textarea>
+            <span th:errors="*{description}" class="text-danger">error:may not be empty</span>
           </div>
         </div>
         <!-- submit button -->

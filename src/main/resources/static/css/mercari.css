@@ -43,3 +43,15 @@ div#login{
 .btn-default{
   background-image: none;
 }
+
+.error{
+	color: #F00;
+	text-align: center;
+	margin-top:10px;	
+	background-color: #cae5ff;
+	border-radius: 10px;
+}
+
+.center{
+	text-align:center;
+}

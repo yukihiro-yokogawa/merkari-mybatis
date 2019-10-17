@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html
-	xmlns:th="http://www.thymeleaf.org">
+	 xmlns:th="http://www.thymeleaf.org"
+	 xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -33,10 +34,12 @@
     <div id="navbar" class="collapse navbar-collapse">
       <div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="logout" href="./login.html">Logout <i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="!hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user}">Login <i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user/info}">ユーザー情報 <i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user/logout}">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+          <span id="loginName" sec:authorize="hasRole('USER')" sec:authentication="principal.mailAddress">user: userName</span>
         </p>
       </div>
     </div>
@@ -45,18 +48,21 @@
   <div id="main" class="container-fluid">
     <!-- addItem link -->
     <div id="addItemButton">
-      <a class="btn btn-default" href="./add.html"><i class="fa fa-plus-square-o"></i> Add New Item</a>
+      <a class="btn btn-default" href="./add.html" th:href="@{add}"><i class="fa fa-plus-square-o"></i> Add New Item</a>
     </div>
 
     <!-- 検索フォーム -->
     <div id="forms">
-      <form action="" class="form-inline" role="form" th:action="@{searchItem}">
+      <form action="" class="form-inline" role="form" th:action="@{searchItem}" th:object="${searchCategoryForm}">
         <div class="form-group">
           <input name="type" type="hidden" class="form-control" id="type" th:value="searchItem" placeholder="item name"/>
-          <input name="name" type="text" class="form-control" id="name" placeholder="item name"/>
+          <input name="name" type="text" class="form-control" id="name" th:field="*{name}" placeholder="item name"/>
         </div>
         <div class="form-group"><i class="fa fa-plus"></i></div>
         <div class="form-group">
+          <input name="hiddenParent" type="hidden" th:value="*{parentId}">
+          <input name="hiddenChild" type="hidden" th:value="*{childId}">
+          <input name="hiddenGrandChild" type="hidden" th:value="*{grandChildId}">
           <select name="parentId" id="parent-category" class="form-control">
             <option value="0">- parentCategory -</option>
           </select>
@@ -69,7 +75,7 @@
         </div>
         <div class="form-group"><i class="fa fa-plus"></i></div>
         <div class="form-group">
-          <input name="brand" type="text" class="form-control" placeholder="brand"/>
+          <input name="brand" type="text" class="form-control" th:field="*{brand}" placeholder="brand"/>
         </div>
         <div class="form-group"></div>
         <button type="submit" class="btn btn-default"><i class="fa fa-angle-double-right"></i> search</button>
@@ -80,8 +86,8 @@
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous" th:unless="${page == 1}"><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}-1,type='prev')}">&larr; prev</a></li>
-          <li class="next" th:unless="${page == session.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}+1,type='next')}">next &rarr;</a></li>
+          <li class="previous" th:unless="${searchCategoryForm.page == '1'}"><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}-1,type='prev')}">&larr; prev</a></li>
+          <li class="next" th:unless="${searchCategoryForm.page == searchCategoryForm.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}+1,type='next')}">next &rarr;</a></li>
         </ul>
       </nav>
     </div>
@@ -106,40 +112,45 @@
             	th:href="@{/item/searchItem(page=1,type='search',parentId=${item.parentId},childId=0,grandChildId=0)}">Electronics</a> 
             / 
             <a href="" th:text="${item.childName}"
-            	th:href="@{/item/searchItem(page=1,type='search',parentId=0,childId=${item.childId},grandChildId=0)}">Computers &amp; Tablets</a> 
+            	th:href="@{/item/searchItem(page=1,type='search',parentId=${item.parentId},childId=${item.childId},grandChildId=0)}">Computers &amp; Tablets</a> 
             / 
             <a href="" th:text="${item.grandChildName}"
-            	th:href="@{/item/searchItem(page=1,type='search',parentId=0,childId=0,grandChildId=${item.grandChildId})}">>Components &amp; Parts</a></td>
+            	th:href="@{/item/searchItem(page=1,type='search',parentId=${item.parentId},childId=${item.childId},grandChildId=${item.grandChildId})}">>Components &amp; Parts</a></td>
             <td class="item-brand" ><a href="" th:text = "${item.brand}"
             th:href="@{/item/searchItem(page=1,type='search',parentId=0,childId=0,grandChildId=0,brand=${item.brand})}">Razer</a></td>
             <td class="item-condition" th:text = "${item.condition}">3</td>
           </tr>
         </tbody>
       </table>
+      <div class="error" th:object="${searchCategoryForm}">
+		<label for="inputError" th:errors="*{name}">メールアドレスを入力してください</label>
+	  </div>
     </div>
 
     <!-- pagination -->
     <div class="pages">
       <nav class="page-nav">
         <ul class="pager">
-          <li class="previous" th:unless="${page == 1}"><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}-1,type='prev')}">&larr; prev</a></li>
-          <li class="next" th:unless="${page == session.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}+1,type='next')}">next &rarr;</a></li>
+          <li class="previous" th:unless="${searchCategoryForm.page == '1'}"><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}-1,type='prev')}">&larr; prev</a></li>
+          <li class="next" th:unless="${searchCategoryForm.page == searchCategoryForm.maxPage}" ><a href="#" th:href="@{/item/searchItem(page=${searchCategoryForm.page}+1,type='next')}">next &rarr;</a></li>
         </ul>
       </nav>
       <!-- ページ番号を指定して表示するフォーム -->
-      <div id="select-page">
-        <form class="form-inline" th:action="@{searchItem}"　th:value="search">
+      <div id="select-page" th:if="${itemList != null}">
+        <form class="form-inline" th:action="@{searchItem}"　th:value="search" th:if="${searchCategoryForm.maxPage != 1}" th:object="${searchCategoryForm}">
           <div class="form-group">
-            <div class="input-group col-xs-6">
-              <label></label>
-              <input type="text" name="page" class="form-control"/>
-              <input type="hidden" name="type" th:value="search"/>
-              <!-- 総ページ数 -->
-              <div class="input-group-addon">/ <span th:text="${searchCategoryForm.maxPage}">20</span></div>
-            </div>
-            <div class="input-group col-xs-1">
+            <div>
+              <div class=" input-group col-xs-6">
+                <input type="text" name="page" class="form-control" th:field="*{page}"/>
+                <input type="hidden" name="type" th:value="search"/>
+                <!-- 総ページ数 -->
+                <div class="input-group-addon">/ <span th:text="${searchCategoryForm.maxPage}">20</span></div>
+             </div>
+             <div class="input-group col-xs-1">
               <button type="submit" class="btn btn-default">Go</button>
+             </div>
             </div>
+		      <span class="text-danger" th:errors="*{page}"></span>
           </div>
         </form>
       </div>

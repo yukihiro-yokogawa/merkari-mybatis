@@ -1,5 +1,8 @@
 package com.example.demo.form;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 import lombok.Data;
 
 @Data
@@ -9,9 +12,11 @@ public class ItemForm {
 	String id;
 
 	/**	商品名 */
+	@NotBlank(message="Please enter a name.")
 	String name;
 
 	/** 商品状況 */
+	@NotBlank(message="Please checked a condition.")
 	String condition;
 
 	/**	親カテゴリID */
@@ -36,12 +41,15 @@ public class ItemForm {
 	String brand;
 
 	/** 値段 */
+	@NotBlank(message="Please enter a price.")
+	@Pattern(regexp="[0-9]+", message="Please enter a half-width digit.")
 	String price;
 
 	/** 配送方法 */
 	String shipping;
 
 	/** 商品概要 */
+	@NotBlank(message="Please enter a description.")
 	String description;
 	
 }

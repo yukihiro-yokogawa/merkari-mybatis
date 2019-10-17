@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html
-	xmlns:th="http://www.thymeleaf.org">
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -32,10 +33,11 @@
     <div id="navbar" class="collapse navbar-collapse">
       <div>
         <ul class="nav navbar-nav navbar-right">
-          <li><a id="logout" href="./login.html">Logout&nbsp;<i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="!hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user}">Login <i class="fa fa-power-off"></i></a></li>
+          <li sec:authorize="hasRole('USER')"><a id="logout" href="./login.html" th:href="@{/user/logout}">Logout <i class="fa fa-power-off"></i></a></li>
         </ul>
         <p class="navbar-text navbar-right">
-          <span id="loginName">user: userName</span>
+          <span id="loginName" sec:authorize="hasRole('USER')" sec:authentication="principal.mailAddress">user: userName</span>
         </p>
       </div>
     </div>
@@ -43,7 +45,7 @@
 
   <!-- details -->
   <div class="container">
-    <a type="button" class="btn btn-default" href="./list.html" th:href="@{/item/searchItem(type=search,name=,brand=)}"><i class="fa fa-reply"></i> back</a>
+    <a type="button" class="btn btn-default" href="./list.html" th:href="@{/item/searchItem(type=search,name=${searchCategoryForm.name},brand=${searchCategoryForm.brand})}"><i class="fa fa-reply"></i> back</a>
     <h2>Details</h2>
     <div id="details">
       <table class="table table-hover">

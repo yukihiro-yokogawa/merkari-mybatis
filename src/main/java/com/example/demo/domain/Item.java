@@ -21,7 +21,7 @@ public class Item {
 	Integer condition;
 
 	/**	親カテゴリID */
-	String parentId;
+	Integer parentId;
 	
 	/**	親カテゴリ名 */
 	String parentName;

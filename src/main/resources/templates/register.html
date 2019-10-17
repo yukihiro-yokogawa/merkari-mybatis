@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html
+	 xmlns:th="http://www.thymeleaf.org"
+	 xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -20,7 +22,7 @@
 <body>
   <!-- navbar -->
   <nav class="navbar navbar-inverse">
-    <a class="navbar-brand" href="./list.html">Rakus Items</a>
+    <a class="navbar-brand" href="./list.html" th:href="@{/item/top}">Rakus Items</a>
   </nav>
 
   <!-- register form -->
@@ -28,21 +30,30 @@
     <div class="panel panel-default">
       <div class="panel-heading">Register Account</div>
       <div class="panel-body">
-        <form action="#" method="POST">
+        <form action="#" th:action="@{provisionalRegisterProcess}" method="POST" th:object="${memberForm}">
           <div class="form-group">
             <label for="mail">mail address</label>
-            <input type="email" class="form-control" id="mail">
+            <input name="mailAddress" type="email" class="form-control" id="mail">
+        	<span class="text-danger" th:errors="*{mailAddress}"></span>
           </div>
           <div class="form-group">
             <label for="password">password</label>
-            <input type="text" class="form-control" id="password">
+            <input name="password" type="password" class="form-control" id="password">
+        	<span class="text-danger" th:errors="*{password}"></span>
           </div>
+          <div class="form-group">
+            <label for="password">confirm password</label>
+            <input name="confirmPassword" type="password" class="form-control" id="password">
+        	<span class="text-danger" th:errors="*{confirmPassword}"></span>
+          </div>
+          <input type="hidden" name="authority" value="-1">
           <button type="submit" class="btn btn-default">Submit</button>
         </form>
       </div>
     </div>
     <div>
-      <a type="button" class="btn btn-default" href="./login.html"><i class="fa fa-reply"></i>&nbsp;Login page</a>
+      <a type="button" class="btn btn-default" href="./login.html" th:href="@{/user}"><i class="fa fa-reply"></i>&nbsp;Login page</a>
     </div>
+  </div>
 </body>
 </html>

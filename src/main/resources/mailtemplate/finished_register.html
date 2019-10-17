@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<p>本登録はまだ完了していません。</p>
+	<p>以下のリンクをクリックして本登録を完了させてください。</p>
+	<a th:href="@{http://localhost:8080/merukari/user/registration(uuid=${uuid})}">本登録はこちら</a>
+</body>
+</html>

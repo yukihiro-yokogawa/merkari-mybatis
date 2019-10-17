@@ -34,6 +34,26 @@ public interface ItemMapper {
 	 */
 	Item selectItem(@Param("type") String count,@Param("searchCategory") SearchCategory searchCategory);
 	
+	/**
+	 * 特定商品の詳細情報を取得するメソッドです.
+	 * 
+	 * @param itemId
+	 * @param detail
+	 * @return
+	 */
 	Item selectItem(@Param("id") Integer itemId,@Param("type") String detail);
 	
+	/**
+	 * 商品情報の更新
+	 * 
+	 * @param itemDetail
+	 */
+	void updateItem(@Param("item") Item itemDetail);
+	
+	/**
+	 * 商品の追加
+	 * 
+	 * @param itemDetail
+	 */
+	void insertItem(@Param("item") Item itemDetail);
 }

@@ -4,6 +4,19 @@ spring:
     url: jdbc:postgresql://localhost:5432/merukari
     username: postgres
     password: postgres
+    
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    port: 587
+    username: side19river951happy128@gmail.com
+    password: oyeylaxwskzzdguz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   servlet:

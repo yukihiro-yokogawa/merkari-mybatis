@@ -1,5 +1,7 @@
 package com.example.demo.form;
 
+import javax.validation.constraints.Pattern;
+
 import lombok.Data;
 
 /**
@@ -27,10 +29,11 @@ public class SearchCategoryForm {
 	String brand;
 	
 	/**	検索したいページ */
-	Integer page;
+	@Pattern(regexp="[0-9]+",message="Please enter a half-width digit.")
+	String page;
 
 	/**	最大ページ */
-	Integer maxPage;
+	String maxPage;
 	
 	/**
 	 * ページの検索タイプ
@@ -46,8 +49,10 @@ public class SearchCategoryForm {
 	 */
 	String type;
 	
+	/**	ページに表示されている商品が持つIDの最大 */
 	Integer maxId;
 	
+	/**	ページに表示されている商品が持つIDの最小 */
 	Integer minId;
 	
 }

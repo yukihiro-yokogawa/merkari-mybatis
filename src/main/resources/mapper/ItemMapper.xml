@@ -26,19 +26,19 @@
 			item.description description
 		</if>
 		from
-		category as parent
+			category as parent
 		inner join
-		category as child
+			category as child
 		on
-		parent.id = child.parent
+			parent.id = child.parent_id
 		inner join
-		category as grand_child
+			category as grand_child
 		on
-		child.id = grand_child.parent
+			child.id = grand_child.parent_id
 		right outer join
-		items as item
+			items as item
 		on
-		item.category = grand_child.id
+			item.category_id = grand_child.id
 		<if test="type == 'detail'">
 			<where>
 				item.id = #{id}
@@ -56,7 +56,7 @@
 				</if>
 				<if
 					test="searchCategory.name != null and searchCategory.name != ''">
-					AND item.name LIKE '${searchCategory.name}%'
+					AND item.name ILIKE '${searchCategory.name}%'
 				</if>
 				<if
 					test="searchCategory.parentId != null and searchCategory.parentId != 0">
@@ -72,7 +72,7 @@
 				</if>
 				<if
 					test="searchCategory.brand != null and searchCategory.brand != '' and type != 'brandSearch'">
-					AND item.brand LIKE '${searchCategory.brand}%'
+					AND item.brand ILIKE '${searchCategory.brand}%'
 				</if>
 				<if test="type == 'brandSearch'">
 					AND item.brand = '${searchCategory.brand}'
@@ -92,4 +92,36 @@
 			</if>
 		</if>
 	</select>
+	
+	<update id="updateItem">
+		update
+			items
+		set
+			name=#{item.name},
+			condition=#{item.condition},
+			<if test="item.grandChildId != null">
+				category_id=#{item.grandChildId},
+			</if>
+			brand=#{item.brand},
+			price=#{item.price},
+			description=#{item.description}
+		where
+			id=#{item.id}
+	</update>
+	
+	<insert id="insertItem">
+		insert
+			into items
+			(name,price
+			<if test="item.grandChildId != 0">
+				,category_id
+			</if>
+			,brand,condition,description)
+			values(#{item.name},#{item.price}
+			<if test="item.grandChildId != 0">
+				,#{item.grandChildId}
+			</if>
+			,#{item.brand},#{item.condition},#{item.description})
+	</insert>
+	
 </mapper>

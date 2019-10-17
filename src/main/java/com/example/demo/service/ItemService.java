@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.Item;
 import com.example.demo.domain.SearchCategory;
+import com.example.demo.form.ItemForm;
 import com.example.demo.form.SearchCategoryForm;
 import com.example.demo.mapper.ItemMapper;
 
@@ -24,7 +25,7 @@ public class ItemService {
 	ItemMapper itemMapper;
 
 	/**
-	 * 商品の検索
+	 * 商品を検索するメソッドです.
 	 * 
 	 * @param id
 	 * @param type
@@ -42,7 +43,7 @@ public class ItemService {
 	}
 
 	/**
-	 * 商品の件数
+	 * 商品の件数を取得するメソッドです.
 	 * 
 	 * @param count
 	 * @return
@@ -57,11 +58,50 @@ public class ItemService {
 		return itemCount;
 	}
 	
+	/**
+	 * 特定商品の詳細を取得するメソッドです.
+	 * 
+	 * @param itemId
+	 * @param detail
+	 * @return
+	 */
 	public Item itemDetail(Integer itemId,String detail) {
 
 		Item itemDetail = itemMapper.selectItem(itemId, detail);
 		
 		return itemDetail;
+	}
+	
+	/**
+	 * 特定商品の詳細を更新するメソッドです.
+	 * 
+	 * @param itemDetail 商品詳細
+	 */
+	public void updateItem(ItemForm form) {
+		
+		Item itemDetail = new Item();
+		//フォームの情報をItemオブジェクトにセット
+		BeanUtils.copyProperties(form, itemDetail);
+		itemDetail.setCondition(Integer.parseInt(form.getCondition()));
+		if(!form.getGrandChildId().equals("0")) {
+			itemDetail.setGrandChildId(Integer.parseInt(form.getGrandChildId()));
+		}
+		itemDetail.setPrice(Integer.parseInt(form.getPrice()));
+
+		itemMapper.updateItem(itemDetail);
+	}
+	
+	public void insertItem(ItemForm form) {
+		Item itemDetail = new Item();
+		BeanUtils.copyProperties(form, itemDetail);
+		
+		itemDetail.setCondition(Integer.parseInt(form.getCondition()));
+		itemDetail.setParentId(Integer.parseInt(form.getParentId()));
+		itemDetail.setChildId(Integer.parseInt(form.getChildId()));
+		itemDetail.setGrandChildId(Integer.parseInt(form.getGrandChildId()));
+		itemDetail.setPrice(Integer.parseInt(form.getPrice()));
+		
+		itemMapper.insertItem(itemDetail);
 	}
 
 }

@@ -16,11 +16,11 @@
 		inner join
 			category as child
 		on
-			parent.id = child.parent
+			parent.id = child.parent_id
 		inner join
 			category as grand_child
 		on
-			child.id = grand_child.parent
+			child.id = grand_child.parent_id
 	</select>
 	
 	<resultMap type="Category" id="CategoryList">

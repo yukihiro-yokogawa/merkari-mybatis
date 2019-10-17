@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MemberMapper">
+	<!-- 仮ユーザー登録 -->
+	<insert id="insertProvisionalMember">
+		insert into provisional_users
+			(name,password,authority,uuid,register_date)
+		values
+			(#{member.mailAddress},#{member.password},#{member.authority},#{member.uuid},#{member.registerDate})
+	</insert>
+	<!-- 仮ユーザー用のテーブルから本ユーザーのテーブルにコピー -->
+	<insert id="insertMember">
+		insert into users
+			(name,password,authority)
+		select
+			name,password,authority
+		from
+			provisional_users
+		where uuid=#{uuid}
+	</insert>
+	<!--登録時に既に登録されているか確認 -->
+	<select id="findByMailAddress" resultType="Member">
+		select
+			name as mailAddress,
+			password,
+			authority,
+			verification_code
+		from
+			users
+		where
+			name=#{mailAddress}
+	</select>
+	<!--本登録時に仮ユーザー削除 -->
+	<delete id="deleteByProvisionalUser">
+		delete
+		from provisional_users
+		where uuid=#{uuid}
+	</delete>
+	<update id="updateUser">
+		update
+			users
+		set
+			name=#{member.mailAddress},password=#{member.password},verification_code=#{member.verificationCode}
+		where
+			name=#{loginUser}
+	</update>
+</mapper>
