@@ -14,8 +14,12 @@ public interface MemberMapper {
 	
 	Member findByMailAddress(@Param("mailAddress") String mailAddress);
 	
+	Member findByProvisionalMember(@Param("uuid") String uuid);
+	
 	void deleteByProvisionalUser(@Param("uuid") String uuid);
 	
 	void updateUser(@Param("member") Member member,@Param("loginUser") String loginUser);
+	
+	void updateLocker(@Param("mailAddress") String mailAddress ,@Param("count") Integer lockCount);
 	
 }

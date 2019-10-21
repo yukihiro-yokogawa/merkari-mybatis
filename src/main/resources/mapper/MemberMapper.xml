@@ -6,16 +6,24 @@
 	<!-- 仮ユーザー登録 -->
 	<insert id="insertProvisionalMember">
 		insert into provisional_users
-			(name,password,authority,uuid,register_date)
+			(name,password,authority,uuid,register_date,verification_code)
 		values
-			(#{member.mailAddress},#{member.password},#{member.authority},#{member.uuid},#{member.registerDate})
+			(#{member.mailAddress},#{member.password},#{member.authority},#{member.uuid},#{member.registerDate},#{member.verificationCode})
 	</insert>
 	<!-- 仮ユーザー用のテーブルから本ユーザーのテーブルにコピー -->
+	<select id="findByProvisionalMember" resultType="Member">
+		select
+			register_date
+		from
+			provisional_users
+		where
+			uuid=#{uuid}
+	</select>
 	<insert id="insertMember">
 		insert into users
-			(name,password,authority)
+			(name,password,verification_code,authority,locked,deleated,is_locked)
 		select
-			name,password,authority
+			name,password,verification_code,authority,0,false,false
 		from
 			provisional_users
 		where uuid=#{uuid}
@@ -26,7 +34,10 @@
 			name as mailAddress,
 			password,
 			authority,
-			verification_code
+			verification_code,
+			locked,
+			deleted,
+			is_locked
 		from
 			users
 		where
@@ -45,5 +56,18 @@
 			name=#{member.mailAddress},password=#{member.password},verification_code=#{member.verificationCode}
 		where
 			name=#{loginUser}
+	</update>
+	<update id="updateLocker">
+		update
+			users
+		set
+			<if test="count &lt;= 5">
+			locked=#{count}
+			</if>
+			<if test="count &gt; 5">
+			is_locked = true
+			</if>
+		where
+			name=#{mailAddress}
 	</update>
 </mapper>

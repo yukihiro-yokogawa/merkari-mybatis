@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.demo.domain.LoginMember;
+import com.example.demo.security.PrincipalGetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -20,12 +20,14 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 @CrossOrigin
 public class OnetimePasswordGenerator {
 
+	@Autowired
+	private PrincipalGetter principalGetter;
+	
 	@RequestMapping("/passGenerator")
 	@ResponseBody
-	public String googleAuth(@AuthenticationPrincipal LoginMember loginMember,HttpSession session) {
-		if (loginMember != null) {
+	public String googleAuth(HttpSession session) {
 			String serviceName = "Rakus_Items";
-			String userId = loginMember.getUsername();
+			String userId = principalGetter.getMember().getMailAddress();
 			String uriJson = null;
 
 			GoogleAuthenticator gAuth = new GoogleAuthenticator();
@@ -43,8 +45,6 @@ public class OnetimePasswordGenerator {
 			session.setAttribute("secret", secret);
 			
 			return uriJson;
-		}
-		return null;
 	}
 
 }

@@ -31,7 +31,7 @@
       <div class="panel-heading">Login</div>
       <div class="panel-body">
         <p class="text-danger" th:text="${errorMessage}">error:failed to login</p>
-        <form action="#" th:action="@{user/login}" method="POST">
+        <form action="#" th:action="@{/user/login}" method="POST">
           <div class="form-group">
             <label for="mail">mail address</label>
             <input name="mailAddress"type="email" class="form-control" id="mail">

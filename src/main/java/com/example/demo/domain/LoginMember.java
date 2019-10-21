@@ -12,6 +12,7 @@ public class LoginMember extends User{
 	
 	public LoginMember(Member member, Collection<GrantedAuthority> authorityList) {
 		super(member.getMailAddress(),member.getPassword(),authorityList);
+		System.out.println(member);
 		this.member = member;
 	}
 	

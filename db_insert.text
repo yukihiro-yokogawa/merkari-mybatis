@@ -1,0 +1,16 @@
+-- Table: public.users
+
+-- DROP TABLE public.users;
+
+CREATE TABLE public.users
+(
+    id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+    name character varying(255) COLLATE pg_catalog."default",
+    password character varying(255) COLLATE pg_catalog."default",
+    authority integer,
+    verification_code character varying(255) COLLATE pg_catalog."default",
+    locked integer,
+    deleted boolean,
+    is_locked boolean,
+    CONSTRAINT users_pkc PRIMARY KEY (id)
+)

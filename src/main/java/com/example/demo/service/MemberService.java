@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class MemberService {
 	 * Bcryptアルゴリズムで入力されたパスワードを暗号化します.
 	 * @param form
 	 */
-	public void insertProvisionalMember(MemberForm form, String uuid) {
+	public void insertProvisionalMember(MemberForm form, String secret, String uuid) {
 		String encodePassword = passwordEncoder.encode(form.getPassword());
 		Member member = new Member();
 		//formの値をコピー
@@ -36,12 +35,23 @@ public class MemberService {
 		member.setAuthority(Integer.parseInt(form.getAuthority()));
 		//Bcryptアルゴリズムで暗号化されたパスワードをドメインにセット
 		member.setPassword(encodePassword);
+		member.setVerificationCode(secret);
 		//controllerで作成された仮登録のランダムトークンをドメインにセット
 		member.setUuid(uuid);
 		//登録した日付をドメインにセット（削除用）
-		LocalDate date = LocalDate.now();
-		member.setRegisterDate(Date.valueOf(date));
+		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
+		member.setRegisterDate(timeStamp);
 		memberMapper.insertProvisionalMember(member);
+	}
+		
+	/**
+	 * タイムアウトチェック、又は失敗時の処理
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Member findByProvisionalMember(String uuid) {
+		return memberMapper.findByProvisionalMember(uuid);
 	}
 	
 	public void insertMember(String uuid) {
@@ -83,5 +93,13 @@ public class MemberService {
 		member.setVerificationCode(secret);
 		
 		memberMapper.updateUser(member,loginMember);
+	}
+	
+	public Member findByMailAddress(String mailAddress) {
+		return memberMapper.findByMailAddress(mailAddress);
+	}
+	
+	public void updateLocker(String mailAddress, Integer lockCount) {
+		memberMapper.updateLocker(mailAddress, lockCount);
 	}
 }

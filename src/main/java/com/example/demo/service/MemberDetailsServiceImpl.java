@@ -16,19 +16,24 @@ import com.example.demo.domain.Member;
 import com.example.demo.mapper.MemberMapper;
 
 @Service
-public class MemberDetailsSeviceImpl implements UserDetailsService {
+public class MemberDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
 	private MemberMapper userMapper;
 	
 	@Override
 	public UserDetails loadUserByUsername(String mailAddress) throws UsernameNotFoundException{
-		Member member= userMapper.findByMailAddress(mailAddress);
+		Member member = userMapper.findByMailAddress(mailAddress);
 		if(member == null) {
 			throw new UsernameNotFoundException("そのEmailは登録されていません。");
 		}
 		Collection<GrantedAuthority> authorityList = new ArrayList<>();
 		authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+		if(member.isUsingOTP()) {
+			authorityList.add(new SimpleGrantedAuthority("ROLE_OTPUSER"));
+		}else {
+			authorityList.add(new SimpleGrantedAuthority("ROLE_NONOTPUSER"));
+		}
 		if(member.isAdmin()) {
 			authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		}

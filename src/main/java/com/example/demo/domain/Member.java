@@ -1,6 +1,6 @@
 package com.example.demo.domain;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import lombok.Data;
 
@@ -23,13 +23,20 @@ public class Member {
 	String uuid;
 	
 	/**	登録日 */
-	Date registerDate;
+	Timestamp registerDate;
 	
 	/**	ワンタイムパスワードの認証キー */
 	String verificationCode;
 	
 	/**	権限 */
 	Integer authority;
+	
+	Integer locked;
+	
+	boolean isLocked;
+	
+	/**	倫理削除 */
+	boolean deleted;
 	
 	public boolean isAdmin() {
 		if(getAuthority() == -1) {
