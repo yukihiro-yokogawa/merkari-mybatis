@@ -31,12 +31,20 @@ public class Member {
 	/**	権限 */
 	Integer authority;
 	
+	/**	ログイン認証失敗回数 */
 	Integer locked;
 	
-	boolean isLocked;
+	/**	ロックの有無 */
+	public boolean isLocked;
 	
 	/**	倫理削除 */
 	boolean deleted;
+	
+	/**	アカウントロック解除キー */
+	Integer unlockedKey;
+	
+	/**	解除キーが発行された日 */
+	Timestamp lockedDate;
 	
 	public boolean isAdmin() {
 		if(getAuthority() == -1) {

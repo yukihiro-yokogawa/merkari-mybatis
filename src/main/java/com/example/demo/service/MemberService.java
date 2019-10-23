@@ -85,21 +85,25 @@ public class MemberService {
 	 * @param secret
 	 * @param loginMember
 	 */
-	public void updateMember(MemberForm form, String secret, String loginMember) {
+	public void updateMember(MemberForm form, String secret) {
 		String encodePassword = passwordEncoder.encode(form.getPassword());
 		Member member = new Member();
 		BeanUtils.copyProperties(form, member);
 		member.setPassword(encodePassword);
 		member.setVerificationCode(secret);
 		
-		memberMapper.updateUser(member,loginMember);
+		memberMapper.updateUser(member);
+	}
+	
+	public void updateMember(Member member) {
+		memberMapper.updateUser(member);
 	}
 	
 	public Member findByMailAddress(String mailAddress) {
 		return memberMapper.findByMailAddress(mailAddress);
 	}
 	
-	public void updateLocker(String mailAddress, Integer lockCount) {
-		memberMapper.updateLocker(mailAddress, lockCount);
+	public void updateLocker(Member member) {
+		memberMapper.updateLocker(member);
 	}
 }

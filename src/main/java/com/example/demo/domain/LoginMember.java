@@ -10,9 +10,8 @@ public class LoginMember extends User{
 	private static final long serialVersionUID = 1L;
 	private final Member member;
 	
-	public LoginMember(Member member, Collection<GrantedAuthority> authorityList) {
-		super(member.getMailAddress(),member.getPassword(),authorityList);
-		System.out.println(member);
+	public LoginMember(Member member, Collection<GrantedAuthority> authorityList, boolean accountNonLocked) {
+		super(member.getMailAddress(),member.getPassword(),true,true,true,accountNonLocked,authorityList);
 		this.member = member;
 	}
 	

@@ -24,6 +24,7 @@ public class MemberDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String mailAddress) throws UsernameNotFoundException{
 		Member member = userMapper.findByMailAddress(mailAddress);
+		boolean accountNonLocked = true;
 		if(member == null) {
 			throw new UsernameNotFoundException("そのEmailは登録されていません。");
 		}
@@ -37,8 +38,10 @@ public class MemberDetailsServiceImpl implements UserDetailsService {
 		if(member.isAdmin()) {
 			authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		}
-		
-		return new LoginMember(member,authorityList);
+		if(member.isLocked == true) {
+			accountNonLocked = false;
+		}
+		return new LoginMember(member,authorityList,accountNonLocked);
 	}
 	
 }

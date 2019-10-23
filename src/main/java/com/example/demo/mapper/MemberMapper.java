@@ -18,8 +18,8 @@ public interface MemberMapper {
 	
 	void deleteByProvisionalUser(@Param("uuid") String uuid);
 	
-	void updateUser(@Param("member") Member member,@Param("loginUser") String loginUser);
+	void updateUser(@Param("member") Member member);
 	
-	void updateLocker(@Param("mailAddress") String mailAddress ,@Param("count") Integer lockCount);
+	void updateLocker(@Param("member") Member member);
 	
 }

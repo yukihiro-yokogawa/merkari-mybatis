@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.thymeleaf.context.Context;
 
+import com.example.demo.domain.Mail;
+import com.example.demo.domain.Member;
 import com.example.demo.form.MemberForm;
 import com.example.demo.security.PrincipalGetter;
 import com.example.demo.service.MemberService;
@@ -52,9 +56,14 @@ public class UserController {
 	 * @return ログインページのView
 	 */
 	@RequestMapping()
-	public String login(Model model, @RequestParam(required = false) String error) {
+	public String login(Model model, @RequestParam(required = false) String error, String accountLock, String mailAddress, HttpSession session) {
+		System.out.println(error);
 		if (error != null) {
 			model.addAttribute("errorMessage", "wrong email address, password or OTP");
+		}
+		if(accountLock != null) {
+			session.setAttribute("mailAddress", mailAddress);
+			return "accountLock";
 		}
 		return "login";
 	}
@@ -103,10 +112,14 @@ public class UserController {
 		}
 		memberService.insertProvisionalMember(form, secret, uuid);
 		// mailのthymeleaftemplateに仮登録用のuuidをセットする.
+		Mail mail = new Mail();
+		mail.setTitle("RakusItems Register");
+		mail.setMailAddress(form.getMailAddress());
+		mail.setHtml("finished_register");
 		Context context = new Context();
 		context.setVariable("uuid", uuid);
 		context.setVariable("mailAddress", form.getMailAddress());
-		sendMailService.sendMail(context, form.getMailAddress());
+		sendMailService.sendMail(context, mail);
 
 		return "redirect:/user";
 	}
@@ -206,11 +219,123 @@ public class UserController {
 			System.err.println("どれかの入力値が間違っています。");
 			return onetimePasswordRegister();
 		}
-		memberService.updateMember(form, secret, principalGetter.getMember().getMailAddress());
+		memberService.updateMember(form, secret);
 		// 発行したシークレットキーを削除
 		session.removeAttribute("secret");
 
 		return "redirect:info";
 	}
-
+	
+	/**
+	 * アカウントロック解除のメールを送るためのメソッドです.
+	 * 
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/unlockUserSendMail")
+	public String unlockUserSendMail(HttpSession session) {
+		//メール情報
+		Mail mail = new Mail();
+		mail.setTitle("RakusItems unlocker");
+		mail.setMailAddress(session.getAttribute("mailAddress").toString());
+		mail.setHtml("unlock_user");
+		//アカウントロック解除キー生成
+		Random rnd = new Random();
+		int unlockedKey = rnd.nextInt(900001) + 99999;
+		
+		Member member = new Member();
+		member.setMailAddress(session.getAttribute("mailAddress").toString());
+		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
+		member.setLockedDate(timeStamp);
+		member.setLocked(5);
+		member.setUnlockedKey(unlockedKey);
+		memberService.updateLocker(member);
+		Context context = new Context();
+		context.setVariable("mailAddress", session.getAttribute("mailAddress"));
+		context.setVariable("unlockedKey", unlockedKey);
+		sendMailService.sendMail(context, mail);
+		return "redirect:/user";
+	}
+	
+	/**
+	 * アカウントロックの解除を認証キーを入力するメソッドです.
+	 * 
+	 * @param model
+	 * @param mailAddress
+	 * @return
+	 */
+	@RequestMapping("unlockUser")
+	public String unlockUser(Model model, String mailAddress) {
+		model.addAttribute("mailAddress",mailAddress);
+		return "unlocked_user";
+	}
+	
+	/**
+	 * アカウントロックの解除プロセスを担うメソッドです.
+	 * 
+	 * @param model
+	 * @param session
+	 * @param unlockedKey
+	 * @param mailAddress
+	 * @return
+	 */
+	@RequestMapping("unlockProcess")
+	public String unlockProcess(Model model, HttpSession session, String unlockedKey, String mailAddress) {
+		Member member = memberService.findByMailAddress(mailAddress);
+		LocalDateTime localDateTime = LocalDateTime.now();
+		LocalDateTime lockedDate = member.getLockedDate().toLocalDateTime();
+		if(member.getUnlockedKey() != Integer.parseInt(unlockedKey)) {
+			model.addAttribute("errorMessage","アカウント解除キーが間違っています");
+			return unlockUser(model,mailAddress);
+		}else if(Duration.between(lockedDate, localDateTime).getSeconds() > 300) {
+			model.addAttribute("errorMessage","アカウント解除キーの有効期限が切れています。再度解除キーを発行してください。");
+			return "login";
+		}
+		
+		return "redirect:/user/unlockedUserRegister";
+	}
+	
+	/**
+	 * アカウントロックされたユーザーに新しいパスワードを設定するViewを表示させるメソッドです.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/unlockedUserRegister")
+	public String unlockedUserRegister() {
+		return "unlockedUserRegister";
+	}
+	
+	/**
+	 * アカウントロック解除を行うメソッドです.
+	 * 
+	 * @param form
+	 * @param rs
+	 * @return
+	 */
+	@RequestMapping("unlock")
+	public String unlock(@Validated MemberForm form, BindingResult rs) {
+		Member member = null;
+		if(rs.hasErrors()) {
+			return unlockedUserRegister();
+		}
+		
+		if(memberService.findByMailAddress(form.getMailAddress()) != null) {
+			member = memberService.findByMailAddress(form.getMailAddress());
+		} else {
+			rs.rejectValue("mailAddress", "", "登録されていないメールアドレスです。");
+			return unlockedUserRegister();
+		}
+		memberService.updateMember(member);
+		return "redirect:/user/unlockFinished";
+	}
+	
+	/**
+	 * アカウントロック解除完了のめそっです.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("unlockFinished")
+	public String unlockFinished() {
+		return "unlock_finished";
+	}
 }

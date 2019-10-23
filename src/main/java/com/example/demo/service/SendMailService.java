@@ -15,6 +15,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import com.example.demo.domain.Mail;
+
 @Service
 public class SendMailService {
 	
@@ -22,7 +24,7 @@ public class SendMailService {
 	private JavaMailSender javaMailSender;
 	
 	@Async
-	public void sendMail(Context context,String email) {
+	public void sendMail(Context context,Mail mail) {
 
 		javaMailSender.send(new MimeMessagePreparator() {
 
@@ -30,9 +32,9 @@ public class SendMailService {
 			public void prepare(MimeMessage mimeMessage) throws Exception {
 				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
 				helper.setFrom("side19river951happy128@gmail.com");
-				helper.setTo(email);
-				helper.setSubject("Rakus Items register");
-				helper.setText(getMailBody("finished_register", context),true);
+				helper.setTo(mail.getMailAddress());
+				helper.setSubject(mail.getTitle());
+				helper.setText(getMailBody(mail.getHtml(), context),true);
 			}
 		});
 	}

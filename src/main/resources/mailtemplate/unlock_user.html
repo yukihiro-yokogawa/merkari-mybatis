@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<p>パスワードを忘れた方は、以下のリンクの入力フォームに本メールに記載された解除キーを入力後、登録しているメールアドレスと新しいパスワードを入力してください。</p>
+	<p th:text=${unlockedKey}></p>
+	<a th:href="@{http://localhost:8080/merukari/user/unlockUser(mailAddress=${mailAddress})}">アカウント解除はこちらから</a>
+</body>
+</html>
