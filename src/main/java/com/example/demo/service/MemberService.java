@@ -12,6 +12,7 @@ import com.example.demo.domain.Member;
 import com.example.demo.form.MemberForm;
 import com.example.demo.mapper.MemberMapper;
 
+
 @Service
 @Transactional
 public class MemberService {
@@ -72,10 +73,10 @@ public class MemberService {
 	/**
 	 * 本登録後、仮ユーザーを自動的に削除します.
 	 * 
-	 * @param uuid
+	 * @param mailAddress
 	 */
-	public void deleteByProvisinalUser(String uuid) {
-		memberMapper.deleteByProvisionalUser(uuid);
+	public void deleteByProvisinalUser(String mailAddress) {
+		memberMapper.deleteByProvisionalUser(mailAddress);
 	}
 	
 	/**
@@ -95,7 +96,8 @@ public class MemberService {
 		memberMapper.updateUser(member);
 	}
 	
-	public void updateMember(Member member) {
+	public void updateMember(Member member, String password) {;
+		member.setPassword(passwordEncoder.encode(password));
 		memberMapper.updateUser(member);
 	}
 	

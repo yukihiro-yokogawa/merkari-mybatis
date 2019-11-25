@@ -13,7 +13,6 @@ $.getJSON("/merukari/" + "categoryList", null, function (data, textStatus, jqXHR
 		var childId = $('input[name=hiddenChild]').val();
 		var grandChildId = $('input[name=hiddenGrandChild]').val();
 		var parent_category_id = Object.values(category_list)[0];
-		console.log(parentId)
 		if(parentId == parent_category_id){
 			Object.values(category_list)[2].forEach(child_category_list =>{
 				var child_category_id = Object.values(child_category_list)[0];

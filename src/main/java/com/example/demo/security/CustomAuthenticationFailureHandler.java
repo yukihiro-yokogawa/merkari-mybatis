@@ -17,7 +17,7 @@ import com.example.demo.service.MemberService;
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
 	@Autowired
-	MemberService userService;
+	MemberService memberService;
 
 	/**
 	 * springsecurity:ログイン認証失敗時の処理（アカウントロック）
@@ -28,13 +28,13 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		// TODO Auto-generated method stub
 		Member member = new Member();
 		RequestDispatcher dispatch = null;
-		if(!request.getParameter("mailAddress") .isEmpty()){
-			member = userService.findByMailAddress(request.getParameter("mailAddress"));
+		if(!request.getParameter("mailAddress") .isEmpty() && memberService.findByMailAddress(request.getParameter("mailAddress")) != null){
+			member = memberService.findByMailAddress(request.getParameter("mailAddress"));
 			if(member != null && member.getLocked() <= 5) {
-				userService.updateLocker(member);
+				memberService.updateLocker(member);
 				dispatch = request.getRequestDispatcher("/user?error=true");
 			} else if(member.getLocked() > 5){
-				userService.updateLocker(member);
+				memberService.updateLocker(member);
 				dispatch = request.getRequestDispatcher("/user?accountLock=true?mailAddress=" + request.getParameter("mailAddress"));
 			}
 		}else {

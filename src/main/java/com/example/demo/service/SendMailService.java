@@ -53,6 +53,5 @@ public class SendMailService {
 			templateResolver.setCharacterEncoding("UTF-8");
 			templateResolver.setCacheable(true);
 			return templateResolver;
-
 		}
 	}

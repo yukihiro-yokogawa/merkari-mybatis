@@ -16,7 +16,7 @@ public interface MemberMapper {
 	
 	Member findByProvisionalMember(@Param("uuid") String uuid);
 	
-	void deleteByProvisionalUser(@Param("uuid") String uuid);
+	void deleteByProvisionalUser(@Param("mailAddress") String mailAddress);
 	
 	void updateUser(@Param("member") Member member);
 	

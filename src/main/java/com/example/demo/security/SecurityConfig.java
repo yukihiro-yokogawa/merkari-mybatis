@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http.logout()
 			.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-			.logoutSuccessUrl("/item/top")
+			.logoutSuccessUrl("/user")
 			.deleteCookies("JSESSIONID")
 			.invalidateHttpSession(true);
 	}

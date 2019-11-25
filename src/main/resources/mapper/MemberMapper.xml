@@ -24,6 +24,7 @@
 			(name,password,verification_code,authority,locked,deleted,is_locked,unlocked_key)
 		select
 			name,password,verification_code,authority,0,false,false,000000
+		from
 			provisional_users
 		where uuid=#{uuid}
 	</insert>
@@ -48,7 +49,7 @@
 	<delete id="deleteByProvisionalUser">
 		delete
 		from provisional_users
-		where uuid=#{uuid}
+		where name=#{mailAddress}
 	</delete>
 	<update id="updateUser">
 		update

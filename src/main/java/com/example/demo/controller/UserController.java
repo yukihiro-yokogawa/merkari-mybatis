@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.context.Context;
 
 import com.example.demo.domain.Mail;
@@ -35,7 +36,7 @@ public class UserController {
 
 	@Autowired
 	private MemberService memberService;
-
+	
 	@Autowired
 	private SendMailService sendMailService;
 
@@ -56,15 +57,19 @@ public class UserController {
 	 * @return ログインページのView
 	 */
 	@RequestMapping()
-	public String login(Model model, @RequestParam(required = false) String error, String accountLock, String mailAddress, HttpSession session) {
+	public String login(Model model, @RequestParam(required = false) String error,@RequestParam(required = false) String accountLock,@RequestParam(required = false) String mailAddress, HttpSession session) {
 		System.out.println(error);
 		if (error != null) {
 			model.addAttribute("errorMessage", "wrong email address, password or OTP");
 		}
+	
 		if(accountLock != null) {
 			session.setAttribute("mailAddress", mailAddress);
 			return "accountLock";
 		}
+		
+		session.removeAttribute("relogin");
+		
 		return "login";
 	}
 
@@ -112,6 +117,7 @@ public class UserController {
 		}
 		memberService.insertProvisionalMember(form, secret, uuid);
 		// mailのthymeleaftemplateに仮登録用のuuidをセットする.
+		System.out.println(form);
 		Mail mail = new Mail();
 		mail.setTitle("RakusItems Register");
 		mail.setMailAddress(form.getMailAddress());
@@ -131,7 +137,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping("/registration")
-	public String registration(String uuid, String mailAddress, Model model) {
+	public String registration(@RequestParam(required = false) String uuid,@RequestParam(required = false) String mailAddress, Model model) {
 		if (memberService.findByName(mailAddress) != null) {
 			System.err.println("このユーザーは既に登録されています。");
 			return "register_error";
@@ -140,11 +146,12 @@ public class UserController {
 		LocalDateTime registerDate = memberService.findByProvisionalMember(uuid).getRegisterDate().toLocalDateTime();
 		if (Duration.between(registerDate, localDateTime).getSeconds() > 300) {
 			System.err.println("有効期限が切れています。");
-			memberService.deleteByProvisinalUser(uuid);
+			memberService.deleteByProvisinalUser(mailAddress);
 			model.addAttribute("timeoutError","有効期限が切れています。再度登録してください。");
 			return "redirect:register";
 		}
 		memberService.insertMember(uuid);
+		memberService.deleteByProvisinalUser(mailAddress);
 		return "redirect:finished";
 	}
 
@@ -201,7 +208,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping("/onetimePasswordRegisterProcess")
-	public String onetimePasswordRegisterProcess(@Validated MemberForm form, BindingResult rs, HttpSession session) {
+	public String onetimePasswordRegisterProcess(@Validated MemberForm form, BindingResult rs, HttpSession session,RedirectAttributes attr) {
 		// 入力値チェック
 		if (rs.hasErrors()) {
 			return onetimePasswordRegister();
@@ -222,8 +229,9 @@ public class UserController {
 		memberService.updateMember(form, secret);
 		// 発行したシークレットキーを削除
 		session.removeAttribute("secret");
-
-		return "redirect:info";
+		session.setAttribute("relogin", "確認のためログアウトしました。再度ログインしてください。");
+		
+		return "redirect:/user/logout";
 	}
 	
 	/**
@@ -284,7 +292,7 @@ public class UserController {
 		Member member = memberService.findByMailAddress(mailAddress);
 		LocalDateTime localDateTime = LocalDateTime.now();
 		LocalDateTime lockedDate = member.getLockedDate().toLocalDateTime();
-		if(member.getUnlockedKey() != Integer.parseInt(unlockedKey)) {
+		if(unlockedKey.isEmpty() || member.getUnlockedKey() != Integer.parseInt(unlockedKey)) {
 			model.addAttribute("errorMessage","アカウント解除キーが間違っています");
 			return unlockUser(model,mailAddress);
 		}else if(Duration.between(lockedDate, localDateTime).getSeconds() > 300) {
@@ -325,7 +333,7 @@ public class UserController {
 			rs.rejectValue("mailAddress", "", "登録されていないメールアドレスです。");
 			return unlockedUserRegister();
 		}
-		memberService.updateMember(member);
+		memberService.updateMember(member, form.getPassword());
 		return "redirect:/user/unlockFinished";
 	}
 	

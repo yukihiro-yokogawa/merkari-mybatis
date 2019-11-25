@@ -1,5 +1,4 @@
 $.getJSON("/merukari/" + "passGenerator", null, function(data, textStatus,	jqXHR) {
-	console.log(data);
 	$('#qrcode').qrcode({
 		width : 150,
 		height : 150,

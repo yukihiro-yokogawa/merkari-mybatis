@@ -12,32 +12,36 @@
     integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
     integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
-  <link rel="stylesheet" href="./mercari.css" th:href="@{/css/mercari.css}"/>
+  <link rel="stylesheet" href="./mercari.css"/>
   <!-- script -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script th:src="@{/js/pulldown.js}"></script>
   <title>Rakus Items</title>
 </head>
 <body>
   <!-- navbar -->
   <nav class="navbar navbar-inverse">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="./list.html" th:href="@{/item/top}">Rakus Items</a>
-    </div>
+    <a class="navbar-brand" href="./list.html" th:href="@{/item/top}">Rakus Items</a>
   </nav>
-	<div class="panel-default">
-		<div class="panel-body">
-			<h4>このユーザーはロックされています。</h4>
-			<h4>以下のリンクより再登録を行いアカウントロックを解除してください。</h4><br>
-			<h4><a href="http://localhost:8080/merukari/user/unlockUserSendMail">アカウントロック解除</a></h4>
-		</div>
+
+	<div  style="text-align: center;">
+	<p>
+	以下のいずれかの理由でシステムの操作を中断しました。<br>
+	
+	・不正な操作が行われた<br>
+	・長い時間操作を行わなかった<br>
+	・現在システムメンテナンス中<br>
+	
+	しばらく経ってからもう一度操作してください。<br>
+	
+	</p>
+	<span sec:authorize="!hasRole('ROLE_USER')"><a href="item_list.html" th:href="@{/user/showItemList}" >トップへ戻る</a></span>
 	</div>
+</div>
+<!-- end container -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="../../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
 </body>
 </html>
